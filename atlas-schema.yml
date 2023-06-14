@@ -12,10 +12,21 @@ spec:
   # plain SQL like this example or in Atlas HCL.
   schema:
     sql: |
-      create table admins (
+      create table employees (
         id int not null auto_increment,
         name varchar(255) not null,
         email varchar(255) unique not null,
         short_bio varchar(255) not null,
         primary key (id)
       );
+  # Define policies that control how the operator will apply changes to the target database.
+  policy:
+    # Define a policy that will stop the reconciliation loop if the operator detects
+    # a destructive change such as dropping a column or table.
+    lint:
+      destructive:
+        error: false
+    # Define a policy that omits DROP COLUMN changes from any produced plan.
+    diff:
+      skip:
+        drop_column: false
