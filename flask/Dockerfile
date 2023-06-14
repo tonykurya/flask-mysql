@@ -1,19 +1,12 @@
-FROM python:3.9-slim
-
-RUN apt-get clean \
-    && apt-get -y update
-
-RUN apt-get -y install \
-    nginx \
-    python3-dev \
-    build-essential
+FROM python:3.9
 
 WORKDIR /app
 
-COPY requirements.txt /app/requirements.txt
+COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
 
 EXPOSE 5000
+
 CMD ["python", "app.py"]
