@@ -1,61 +1,16 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: flask-app
+  name: flaskapi
 spec:
   selector:
     matchLabels:
-      app: flask-app
-  replicas: 1
+      app: flaskapi
+  replicas: 3
   template:
     metadata:
       labels:
         app: flask-app
-    spec:
-      containers:
-        - name: flask-app
-          image: flask-api
-          imagePullPolicy: Never
-          env:
-            - name: DB_URL
-              valueFrom:
-                secretKeyRef:
-                  name: mysql-credentials
-                  key: url
-          ports:
-            - containerPort: 5000
-              name: flask-app
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: flask-app
-spec:
-  selector:
-    app: flask-app
-  ports:
-    - name: flask-app
-      port: 5000
-      targetPort: flask-app
-  type: ClusterIP
-
-
----
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: flaskapi-deployment
-  labels:
-    app: flaskapi
-spec:
-  replicas: 3
-  selector:
-    matchLabels:
-      app: flaskapi
-  template:
-    metadata:
-      labels:
-        app: flaskapi
     spec:
       containers:
         - name: flaskapi
@@ -63,14 +18,6 @@ spec:
           imagePullPolicy: Never
           ports:
             - containerPort: 5000
-          env:
-            - name: db_root_password
-              valueFrom:
-                secretKeyRef:
-                  name: flaskapi-secrets
-                  key: db_root_password
-            - name: db_name
-              value: flaskapi
 
 ---
 apiVersion: v1
