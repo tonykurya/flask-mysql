@@ -15,6 +15,7 @@ spec:
       containers:
         - name: flask-app
           image: your-flask-app-image
+          imagePullPolicy: Never
           env:
             - name: DB_URL
               valueFrom:
