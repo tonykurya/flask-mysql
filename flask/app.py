@@ -1,73 +1,133 @@
-from flask import Flask, request
-from flask_sqlalchemy import SQLAlchemy
+"""Code for a flask API to Create, Read, Update, Delete users"""
+import os
+from flask import jsonify, request, Flask
+from flaskext.mysql import MySQL
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:pass@mysql.default:3306/myapp'
-db = SQLAlchemy(app)
 
-class User(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(255), nullable=False)
-    email = db.Column(db.String(255), unique=True, nullable=False)
-    short_bio = db.Column(db.String(255), nullable=False)
+mysql = MySQL()
 
-    def __init__(self, name, email, short_bio):
-        self.name = name
-        self.email = email
-        self.short_bio = short_bio
+# MySQL configurations
+app.config["MYSQL_DATABASE_USER"] = "root"
+app.config["MYSQL_DATABASE_PASSWORD"] = os.getenv("db_root_password")
+app.config["MYSQL_DATABASE_DB"] = os.getenv("db_name")
+app.config["MYSQL_DATABASE_HOST"] = os.getenv("MYSQL_SERVICE_HOST")
+app.config["MYSQL_DATABASE_PORT"] = int(os.getenv("MYSQL_SERVICE_PORT"))
+mysql.init_app(app)
 
-@app.route('/users', methods=['GET'])
-def get_users():
-    users = User.query.all()
-    results = []
-    for user in users:
-        results.append({'id': user.id, 'name': user.name, 'email': user.email, 'short_bio': user.short_bio})
-    return {'users': results}
 
-@app.route('/users', methods=['POST'])
-def create_user():
-    name = request.json['name']
-    email = request.json['email']
-    short_bio = request.json['short_bio']
-    new_user = User(name, email, short_bio)
-    db.session.add(new_user)
-    db.session.commit()
-    return {'message': 'User created successfully'}
+@app.route("/")
+def index():
+    """Function to test the functionality of the API"""
+    return "Hello, world!"
 
-@app.route('/users/<int:user_id>', methods=['GET'])
-def get_user(user_id):
-    user = User.query.get(user_id)
-    if user:
-        return {'id': user.id, 'name': user.name, 'email': user.email, 'short_bio': user.short_bio}
-    return {'message': 'User not found'}, 404
 
-@app.route('/users/<int:user_id>', methods=['PUT'])
-def update_user(user_id):
-    user = User.query.get(user_id)
-    if not user:
-        return {'message': 'User not found'}, 404
+@app.route("/create", methods=["POST"])
+def add_user():
+    """Function to create a user to the MySQL database"""
+    json = request.json
+    name = json["name"]
+    email = json["email"]
+    pwd = json["pwd"]
+    if name and email and pwd and request.method == "POST":
+        sql = "INSERT INTO users(user_name, user_email, user_password) " \
+              "VALUES(%s, %s, %s)"
+        data = (name, email, pwd)
+        try:
+            conn = mysql.connect()
+            cursor = conn.cursor()
+            cursor.execute(sql, data)
+            conn.commit()
+            cursor.close()
+            conn.close()
+            resp = jsonify("User created successfully!")
+            resp.status_code = 200
+            return resp
+        except Exception as exception:
+            return jsonify(str(exception))
+    else:
+        return jsonify("Please provide name, email and pwd")
 
-    user.name = request.json.get('name', user.name)
-    user.email = request.json.get('email', user.email)
-    user.short_bio = request.json.get('short_bio', user.short_bio)
-    db.session.commit()
-    return {'message': 'User updated successfully'}
 
-@app.route('/users/<int:user_id>', methods=['DELETE'])
+@app.route("/users", methods=["GET"])
+def users():
+    """Function to retrieve all users from the MySQL database"""
+    try:
+        conn = mysql.connect()
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM users")
+        rows = cursor.fetchall()
+        cursor.close()
+        conn.close()
+        resp = jsonify(rows)
+        resp.status_code = 200
+        return resp
+    except Exception as exception:
+        return jsonify(str(exception))
+
+
+@app.route("/user/<int:user_id>", methods=["GET"])
+def user(user_id):
+    """Function to get information of a specific user in the MSQL database"""
+    try:
+        conn = mysql.connect()
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM users WHERE user_id=%s", user_id)
+        row = cursor.fetchone()
+        cursor.close()
+        conn.close()
+        resp = jsonify(row)
+        resp.status_code = 200
+        return resp
+    except Exception as exception:
+        return jsonify(str(exception))
+
+
+@app.route("/update", methods=["POST"])
+def update_user():
+    """Function to update a user in the MYSQL database"""
+    json = request.json
+    name = json["name"]
+    email = json["email"]
+    pwd = json["pwd"]
+    user_id = json["user_id"]
+    if name and email and pwd and user_id and request.method == "POST":
+        # save edits
+        sql = "UPDATE users SET user_name=%s, user_email=%s, " \
+              "user_password=%s WHERE user_id=%s"
+        data = (name, email, pwd, user_id)
+        try:
+            conn = mysql.connect()
+            cursor = conn.cursor()
+            cursor.execute(sql, data)
+            conn.commit()
+            resp = jsonify("User updated successfully!")
+            resp.status_code = 200
+            cursor.close()
+            conn.close()
+            return resp
+        except Exception as exception:
+            return jsonify(str(exception))
+    else:
+        return jsonify("Please provide id, name, email and pwd")
+
+
+@app.route("/delete/<int:user_id>")
 def delete_user(user_id):
-    user = User.query.get(user_id)
-    if not user:
-        return {'message': 'User not found'}, 404
+    """Function to delete a user from the MySQL database"""
+    try:
+        conn = mysql.connect()
+        cursor = conn.cursor()
+        cursor.execute("DELETE FROM users WHERE user_id=%s", user_id)
+        conn.commit()
+        cursor.close()
+        conn.close()
+        resp = jsonify("User deleted successfully!")
+        resp.status_code = 200
+        return resp
+    except Exception as exception:
+        return jsonify(str(exception))
 
-    db.session.delete(user)
-    db.session.commit()
-    return {'message': 'User deleted successfully'}
 
-if __name__ == '__main__':
-    with app.app_context():
-        db.create_all()
-    app.run(host='0.0.0.0')
-
-# if __name__ == '__main__':
-#     db.create_all()
-#     app.run(host='0.0.0.0')
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=5000)
