@@ -8,17 +8,17 @@ mysql = MySQL()
 
 # MySQL configurations
 app.config["MYSQL_DATABASE_USER"] = "root"
-app.config["MYSQL_DATABASE_PASSWORD"] = os.getenv("db_root_password")
-app.config["MYSQL_DATABASE_DB"] = os.getenv("db_name")
-app.config["MYSQL_DATABASE_HOST"] = os.getenv("MYSQL_SERVICE_HOST")
-app.config["MYSQL_DATABASE_PORT"] = int(os.getenv("MYSQL_SERVICE_PORT"))
+app.config["MYSQL_DATABASE_PASSWORD"] = "pass"
+app.config["MYSQL_DATABASE_DB"] = "myapp"
+app.config["MYSQL_DATABASE_HOST"] = "mysql.default"
+app.config["MYSQL_DATABASE_PORT"] = 3306
 mysql.init_app(app)
 
 
 @app.route("/")
 def index():
     """Function to test the functionality of the API"""
-    return "Hello, world!"
+    return "Flask API!"
 
 
 @app.route("/create", methods=["POST"])
