@@ -1,0 +1,5 @@
+resources:
+  - flaskapi-secrets.yml
+  - mysql-pv.yml
+  - mysql-deployment.yml
+  - flaskapp-deployment.yml
