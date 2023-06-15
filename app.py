@@ -9,7 +9,7 @@ mysql = MySQL()
 # MySQL configurations
 app.config["MYSQL_DATABASE_USER"] = "root"
 app.config["MYSQL_DATABASE_PASSWORD"] = "pass"
-app.config["MYSQL_DATABASE_DB"] = "myapp"
+app.config["MYSQL_DATABASE_DB"] = "mydb"
 app.config["MYSQL_DATABASE_HOST"] = "mysql.default"
 app.config["MYSQL_DATABASE_PORT"] = 3306
 mysql.init_app(app)
