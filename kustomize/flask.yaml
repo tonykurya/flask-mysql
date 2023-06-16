@@ -24,7 +24,7 @@ spec:
                 - sh
                 - "-c"
                 - >
-                  nc -z mysql 3306
+                  nc -z mysql.default 3306
             initialDelaySeconds: 10
             periodSeconds: 5
 
