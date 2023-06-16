@@ -24,7 +24,8 @@ spec:
                 - sh
                 - "-c"
                 - >
-                  mysql_ready=$(mysql -h mysql -u root -ppass -e "SELECT 1" 2>/dev/null);
+                  pod_name=$(kubectl get pods -l app=mysql -o jsonpath='{.items[0].metadata.name}')
+                  mysql_ready=$(kubectl exec $pod_name -- mysql -h localhost -u root -ppass -e "SELECT 1" 2>/dev/null)
                   if [ "$mysql_ready" ]; then
                     exit 0;
                   else
