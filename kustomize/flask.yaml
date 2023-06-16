@@ -12,27 +12,22 @@ spec:
       labels:
         app: flaskapi
     spec:
+      initContainers:
+        - name: wait-for-mysql
+          image: tonykurya/wait-for
+          env:
+            - name: HOST
+              value: mysql
+            - name: PORT
+              value: "3306"
+          command: ["sh", "-c", "until nc -z $HOST $PORT; do sleep 1; done"]
       containers:
         - name: flaskapi
           image: tonykurya/flask-api
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 5000
-          readinessProbe:
-            exec:
-              command:
-                - sh
-                - "-c"
-                - >
-                  pod_name=$(kubectl get pods -l app=mysql -o jsonpath='{.items[0].metadata.name}')
-                  mysql_ready=$(kubectl exec $pod_name -- mysql -h localhost -u root -ppass -e "SELECT 1" 2>/dev/null)
-                  if [ "$mysql_ready" ]; then
-                    exit 0;
-                  else
-                    exit 1;
-                  fi
-            initialDelaySeconds: 10
-            periodSeconds: 5
+
 
 
 ---
