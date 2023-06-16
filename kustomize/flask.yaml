@@ -24,7 +24,7 @@ spec:
                 - sh
                 - "-c"
                 - >
-                  mysql_ready=$(nc -z -w 1 mysql 3306);
+                  mysql_ready=$(mysql -h mysql -u root -ppass -e "SELECT 1" 2>/dev/null);
                   if [ "$mysql_ready" ]; then
                     exit 0;
                   else
