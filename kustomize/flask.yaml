@@ -12,22 +12,21 @@ spec:
       labels:
         app: flaskapi
     spec:
-      initContainers:
-        - name: wait-for-mysql
-          image: willwill/wait-for-it
-          env:
-            - name: HOST
-              value: mysql
-            - name: PORT
-              value: "3306"
-          command: ["sh", "-c", "until nc -z $HOST $PORT; do sleep 1; done"]
       containers:
         - name: flaskapi
           image: tonykurya/flask-api
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 5000
-
+          readinessProbe:
+            exec:
+              command:
+                - sh
+                - "-c"
+                - >
+                  nc -z mysql 3306
+            initialDelaySeconds: 10
+            periodSeconds: 5
 
 
 ---
