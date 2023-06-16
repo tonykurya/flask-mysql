@@ -25,17 +25,6 @@ You can check the status of the pods, services and deployments.
 ## Check that the database and schemas are set
  
 `kubectl exec -it $(kubectl get pods -l app=mysql -o jsonpath='{.items[0].metadata.name}') -- mysql -uroot -ppass -e "describe mydb.users"`
-
-Result:
-
-+-----------+--------------+------+-----+---------+----------------+
-| Field     | Type         | Null | Key | Default | Extra          |
-+-----------+--------------+------+-----+---------+----------------+
-| id        | int          | NO   | PRI | NULL    | auto_increment |
-| name      | varchar(255) | NO   |     | NULL    |                |
-| email     | varchar(255) | NO   | UNI | NULL    |                |
-| short_bio | varchar(255) | NO   |     | NULL    |                |
-+-----------+--------------+------+-----+---------+----------------+
     
 ## Expose the API
 The API can be accessed by exposing it using minikube: `minikube service flask-service`. This will return a `URL`. If you paste this to your browser you will see the `Flask API` message. You can use this `service_URL` to make requests to the `API`
