@@ -14,7 +14,7 @@ spec:
     spec:
       initContainers:
         - name: wait-for-mysql
-          image: tonykurya/wait-for
+          image: willwill/wait-for-it
           env:
             - name: HOST
               value: mysql
