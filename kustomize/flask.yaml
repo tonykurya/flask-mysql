@@ -18,18 +18,6 @@ spec:
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 5000
-          readinessGates:
-            - conditionType: mydb-available
-              resource:
-                apiVersion: v1
-                kind: Service
-                name: mysql
-                targetResource:
-                  apiVersion: v1
-                  kind: Pod
-                  selector:
-                    matchLabels:
-                      app: mysql
 
 
 ---
