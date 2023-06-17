@@ -18,7 +18,15 @@ spec:
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 5000
-
+          readinessProbe:
+            exec:
+              command:
+                - sh
+                - -c
+                - >
+                  mysql -h mysql.default -u root -ppass -e "use mydb"
+            initialDelaySeconds: 10
+            periodSeconds: 5
 
 ---
 apiVersion: v1
