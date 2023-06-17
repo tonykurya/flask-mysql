@@ -18,7 +18,7 @@ spec:
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 5000
-       initContainers:
+      initContainers:
         - name: wait-for-mysql
           image: bitnami/kubectl
           command:
@@ -27,6 +27,7 @@ spec:
             - |
               until kubectl exec -it $(kubectl get pods -l app=mysql -o jsonpath='{.items[0].metadata.name}') -- \
                 sh -c 'mysql -h mysql -uroot -ppass -e "SELECT 1 FROM mydb.users LIMIT 1"' >/dev/null 2>&1; do sleep 2; done
+
 
 
 ---
