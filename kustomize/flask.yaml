@@ -12,12 +12,6 @@ spec:
       labels:
         app: flaskapi
     spec:
-      containers:
-        - name: flaskapi
-          image: tonykurya/flask-api
-          imagePullPolicy: IfNotPresent
-          ports:
-            - containerPort: 5000
       initContainers:
         - name: wait-for-mysql
           image: bitnami/kubectl
@@ -27,6 +21,13 @@ spec:
             - |
               until kubectl exec -it $(kubectl get pods -l app=mysql -o jsonpath='{.items[0].metadata.name}') -- \
                 sh -c 'mysql -h mysql -uroot -ppass -e "SELECT 1 FROM mydb.users LIMIT 1"' >/dev/null 2>&1; do sleep 2; done
+      containers:
+        - name: flaskapi
+          image: tonykurya/flask-api
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 5000
+
 
 
 
