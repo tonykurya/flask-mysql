@@ -13,14 +13,9 @@ spec:
         app: flaskapi
     spec:
       initContainers:
-        - name: wait-for-mysql
-          image: bitnami/kubectl
-          command:
-            - sh
-            - -c
-            - |
-              until kubectl exec -it $(kubectl get pods -l app=mysql -o jsonpath='{.items[0].metadata.name}') -- \
-                sh -c 'mysql -h mysql -uroot -ppass -e "SELECT 1 FROM mydb.users LIMIT 1"' >/dev/null 2>&1; do sleep 2; done
+        - name: init-cont
+          image: busybox:1.31
+          command: ['sh', '-c', 'echo -e "Checking for the availability of MySQL Server deployment"; while ! nc -z mysql 3306; do sleep 1; printf "-"; done; echo -e "  >> MySQL DB Server has started";']
       containers:
         - name: flaskapi
           image: tonykurya/flask-api
