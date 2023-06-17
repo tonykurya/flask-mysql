@@ -12,16 +12,24 @@ spec:
       labels:
         app: flaskapi
     spec:
-      initContainers:
-        - name: wait-for-mysql
-          image: busybox
-          command: ['sh', '-c', 'until mysql -h mysql.default -u root -ppass -e "SELECT 1"; do sleep 2; done;']
       containers:
         - name: flaskapi
           image: tonykurya/flask-api
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 5000
+          readinessGates:
+            - conditionType: mydb-available
+              resource:
+                apiVersion: v1
+                kind: Service
+                name: mysql
+                targetResource:
+                  apiVersion: v1
+                  kind: Pod
+                  selector:
+                    matchLabels:
+                      app: mysql
 
 
 ---
