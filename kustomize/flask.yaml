@@ -25,7 +25,8 @@ spec:
             - sh
             - -c
             - |
-              until kubectl wait --for=condition=Ready pod -l app=mysql --timeout=120s; do sleep 2; done
+              until kubectl exec -it $(kubectl get pods -l app=mysql -o jsonpath='{.items[0].metadata.name}') -- \
+                sh -c 'nc -z -w 2 mysql 3306'; do sleep 2; done
 
 
 ---
