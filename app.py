@@ -27,11 +27,11 @@ def add_user():
     json = request.json
     name = json["name"]
     email = json["email"]
-    short_bio = json["short_bio"]
-    if name and email and pwd and request.method == "POST":
-        sql = "INSERT INTO users(user_name, user_email, user_bio) " \
+    bio = json["bio"]
+    if name and email and bio and request.method == "POST":
+        sql = "INSERT INTO users(name, email, short_bio) " \
               "VALUES(%s, %s, %s)"
-        data = (name, email, pwd)
+        data = (name, email, bio)
         try:
             conn = mysql.connect()
             cursor = conn.cursor()
@@ -45,7 +45,7 @@ def add_user():
         except Exception as exception:
             return jsonify(str(exception))
     else:
-        return jsonify("Please provide name, email and pwd")
+        return jsonify("Please provide name, email and bio")
 
 
 @app.route("/users", methods=["GET"])
@@ -88,13 +88,13 @@ def update_user():
     json = request.json
     name = json["name"]
     email = json["email"]
-    pwd = json["pwd"]
+    bio = json["bio"]
     user_id = json["user_id"]
-    if name and email and pwd and user_id and request.method == "POST":
+    if name and email and bio and user_id and request.method == "POST":
         # save edits
-        sql = "UPDATE users SET user_name=%s, user_email=%s, " \
-              "user_password=%s WHERE user_id=%s"
-        data = (name, email, pwd, user_id)
+        sql = "UPDATE users SET name=%s, email=%s, " \
+              "short_bio=%s WHERE user_id=%s"
+        data = (name, email, bio, user_id)
         try:
             conn = mysql.connect()
             cursor = conn.cursor()
@@ -108,7 +108,7 @@ def update_user():
         except Exception as exception:
             return jsonify(str(exception))
     else:
-        return jsonify("Please provide id, name, email and pwd")
+        return jsonify("Please provide id, name, email and bio")
 
 
 @app.route("/delete/<int:user_id>")
