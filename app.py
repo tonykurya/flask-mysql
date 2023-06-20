@@ -23,7 +23,7 @@ def index():
 
 @app.route("/create", methods=["POST"])
 def add_user():
-    """Function to create a user to the MySQL database"""
+    """Function to create a user in the MySQL database"""
     json = request.json
     name = json["name"]
     email = json["email"]
@@ -45,7 +45,7 @@ def add_user():
         except Exception as exception:
             return jsonify(str(exception))
     else:
-        return jsonify("Please provide name, email and bio")
+        return jsonify("Please provide name, email, and bio")
 
 
 @app.route("/users", methods=["GET"])
@@ -65,68 +65,52 @@ def users():
         return jsonify(str(exception))
 
 
-@app.route("/user/<int:user_id>", methods=["GET"])
-def user(user_id):
-    """Function to get information of a specific user in the MSQL database"""
+@app.route("/user/<int:id>")
+def user(id):
+    """Function to get information of a specific user from the MySQL database"""
     try:
         conn = mysql.connect()
         cursor = conn.cursor()
-        cursor.execute("SELECT * FROM users WHERE user_id=%s", user_id)
+        cursor.execute("SELECT * FROM users WHERE id=%s", (id,))
         row = cursor.fetchone()
         cursor.close()
         conn.close()
-        resp = jsonify(row)
-        resp.status_code = 200
-        return resp
+        if row:
+            resp = jsonify(row)
+            resp.status_code = 200
+            return resp
+        else:
+            return jsonify("User not found")
     except Exception as exception:
         return jsonify(str(exception))
 
 
 @app.route("/update", methods=["POST"])
 def update_user():
-    """Function to update a user in the MYSQL database"""
+    """Function to update a user in the MySQL database"""
     json = request.json
     name = json["name"]
     email = json["email"]
     bio = json["bio"]
-    user_id = json["user_id"]
-    if name and email and bio and user_id and request.method == "POST":
-        # save edits
-        sql = "UPDATE users SET name=%s, email=%s, " \
-              "short_bio=%s WHERE user_id=%s"
-        data = (name, email, bio, user_id)
+    id = json["id"]
+    if name and email and bio and id and request.method == "POST":
+        sql = "UPDATE users SET name=%s, email=%s, short_bio=%s WHERE id=%s"
+        data = (name, email, bio, id)
         try:
             conn = mysql.connect()
             cursor = conn.cursor()
             cursor.execute(sql, data)
             conn.commit()
-            resp = jsonify("User updated successfully!")
-            resp.status_code = 200
             cursor.close()
             conn.close()
+            resp = jsonify("User updated successfully!")
+            resp.status_code = 200
             return resp
         except Exception as exception:
             return jsonify(str(exception))
     else:
-        return jsonify("Please provide id, name, email and bio")
-
-
-@app.route("/delete/<int:user_id>")
-def delete_user(user_id):
-    """Function to delete a user from the MySQL database"""
-    try:
-        conn = mysql.connect()
-        cursor = conn.cursor()
-        cursor.execute("DELETE FROM users WHERE user_id=%s", user_id)
-        conn.commit()
-        cursor.close()
-        conn.close()
-        resp = jsonify("User deleted successfully!")
-        resp.status_code = 200
-        return resp
-    except Exception as exception:
-        return jsonify(str(exception))
+        return jsonify("Please provide id, name, email, and bio")
 
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000)
+    app.run(host="0.0.0.0", port=5000
