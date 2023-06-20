@@ -27,9 +27,9 @@ def add_user():
     json = request.json
     name = json["name"]
     email = json["email"]
-    pwd = json["pwd"]
+    short_bio = json["short_bio"]
     if name and email and pwd and request.method == "POST":
-        sql = "INSERT INTO users(user_name, user_email, user_password) " \
+        sql = "INSERT INTO users(user_name, user_email, user_bio) " \
               "VALUES(%s, %s, %s)"
         data = (name, email, pwd)
         try:
