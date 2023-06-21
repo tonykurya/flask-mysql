@@ -29,7 +29,7 @@ def add_user():
     email = json["email"]
     bio = json["bio"]
     if name and email and bio and request.method == "POST":
-        sql = "INSERT INTO users(name, email, short_bio) " \
+        sql = "INSERT INTO users(name, email, short_bio) "\
               "VALUES(%s, %s, %s)"
         data = (name, email, bio)
         try:
