@@ -13,8 +13,8 @@ spec:
         app: flaskapi
     spec:
       initContainers:
-        - name: wait-for-mysql
-          image: busybox:1.36.1
+        - name: init-cont
+          image: busybox:1.31
           command: ['sh', '-c', 'echo -e "Checking for the availability of MySQL Server deployment"; while ! nc -z mysql 3306; do sleep 1; printf "-"; done; echo -e "  >> MySQL DB Server has started";']
       containers:
         - name: flaskapi
