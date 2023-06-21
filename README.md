@@ -10,7 +10,7 @@ This repo contains code that
 ## Getting started
 1. Clone the repository
 2. Configure `Docker` to use the `Docker daemon` in your kubernetes cluster via your terminal: `eval $(minikube docker-env)`
-3. Build a kubernetes-api image with the Dockerfile in this repo: `Docker build . -t flask-api`
+3. Build a kubernetes-api image with the Dockerfile in this repo: `docker build . -t flask-api`
 4. Install the Atlas Kubernetes Operator: `helm install atlas-operator oci://ghcr.io/ariga/charts/atlas-operator`
 
 ## Deployments
