@@ -19,7 +19,7 @@ spec:
       containers:
         - name: flaskapi
           image: tonykurya/flask-api
-          imagePullPolicy: IfNotPresent
+          imagePullPolicy: Always
           ports:
             - containerPort: 5000
 
